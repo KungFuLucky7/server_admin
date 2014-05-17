@@ -17,8 +17,8 @@ class Observation(models.Model):
         ('Area', 'Area'),
     )
     observation_type = models.CharField(max_length=20, choices=OBSERVATION_TYPES, blank=True, null=True)
-    latitude = models.IntegerField(blank=True, null=True)
-    longitude = models.IntegerField(blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     gps = GeopositionField("GPS")
     lifeform = models.CharField(max_length=100, blank=True, null=True)

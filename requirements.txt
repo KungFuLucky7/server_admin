@@ -1,0 +1,16 @@
+Django==1.6.2
+Pillow==2.4.0
+South==0.8.4
+dj-database-url==0.3.0
+dj-static==0.0.5
+django-filebrowser==3.5.3
+django-geoposition==0.1.5
+django-grappelli==2.5.1
+django-toolbelt==0.0.1
+gunicorn==18.0
+psycopg2==2.5.2
+pystache==0.5.3
+static==1.0.2
+vboxapi==1.0
+virtualenv==1.11.4
+wsgiref==0.1.2
