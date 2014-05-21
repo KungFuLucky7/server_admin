@@ -5,3 +5,6 @@ lib
 include
 .DS_Store
 .pyc
+server_admin/settings.py
+server_admin/wsgi.py
+

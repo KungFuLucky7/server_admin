@@ -1,5 +1,5 @@
 # Django settings for server_admin project.
-
+# test
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
