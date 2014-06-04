@@ -5,4 +5,5 @@ lib
 include
 .DS_Store
 .pyc
+/server_admin
 
