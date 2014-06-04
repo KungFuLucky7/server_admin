@@ -1,5 +1,5 @@
 # Django settings for server_admin project.
-# test
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -16,7 +16,7 @@ DATABASES = {
         'NAME': 'field_observation_data',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'postgres',
-        'PASSWORD': '1234',
+        'PASSWORD': 'csc675postgres',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
@@ -51,7 +51,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = '/Users/terrywong/server_admin/media'
+MEDIA_ROOT = '/var/www/localhost/htdocs/server_admin/media'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -62,7 +62,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = '/Users/terrywong/server_admin/static'
+STATIC_ROOT = '/var/www/localhost/htdocs/server_admin/static'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -80,7 +80,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -112,7 +112,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/Users/terrywong/server_admin/templates', # Change this to your own directory.
+    '/var/www/localhost/htdocs/server_admin/templates', # Change this to your own directory.
 )
 
 INSTALLED_APPS = (
@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'observations',
     'south',
     'geoposition',
+    'leaflet',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
@@ -166,3 +167,13 @@ LOGGING = {
 }
 
 GRAPPELLI_ADMIN_TITLE = 'Administrative UI for a Field Observation Server'
+
+LEAFLET_CONFIG = {
+    # conf here
+    'DEFAULT_CENTER': (37.7749295, -122.41941550000001),
+    'DEFAULT_ZOOM': 6,
+    'MIN_ZOOM': 0,
+    'MAX_ZOOM': 8,
+    'TILES': 'http://localhost:8888/server_admin/media/openstreetmap/{z}/{x}/{y}.png'
+}
+

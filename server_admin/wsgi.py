@@ -14,8 +14,8 @@ framework.
 
 """
 import os, sys
-sys.path.append('/home/terrywong/server_admin')
-sys.path.append('/home/terrywong/server_admin/server_admin')
+sys.path.append('/var/www/localhost/htdocs/server_admin')
+sys.path.append('/var/www/localhost/htdocs/server_admin/server_admin')
 
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks
 # if running multiple sites in the same mod_wsgi process. To fix this, use
