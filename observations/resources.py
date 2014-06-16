@@ -1,8 +1,14 @@
-from django.contrib import admin
+from import_export import resources
 from observations.models import Observation
-from observations.resources import ObservationResourceAdmin
+from import_export.admin import ImportExportModelAdmin
 
-class ObservationAdmin(admin.ModelAdmin):
+class ObservationResource(resources.ModelResource):
+
+    class Meta:
+        model = Observation
+        
+class ObservationResourceAdmin(ImportExportModelAdmin):
+    resource_class = ObservationResource
     fieldsets = [
         (None,               {'fields': ['species']}),
         (None,               {'fields': ['family']}),
@@ -37,6 +43,3 @@ class ObservationAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.edited_by = request.user
         obj.save()
-        
-#admin.site.register(Observation, ObservationAdmin)
-admin.site.register(Observation, ObservationResourceAdmin)

@@ -3,11 +3,13 @@
 <!-- LOADING -->
 {% load admin_static i18n admin_modify admin_urls grp_tags %}
 {% load leaflet_tags %}
+{% load observations %}
 
 <!-- STYLESHEETS -->
 {% block stylesheets %}
     {{ block.super }}
 		{% leaflet_css %}
+		<link rel="stylesheet" href="/static/observations.css">
 {% endblock %}
 
 <!-- JAVASCRIPTS -->
@@ -182,7 +184,18 @@
             <ul class="grp-object-tools">
                 {% block object-tools-items %}
                     {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+                    <li class="guide"><a href="{% add_preserved_filters add_url is_popup %}?guide">{% trans "Quick Start Guide" %}</a></li>
                     <li><a href="{% add_preserved_filters history_url %}">{% trans "History" %}</a></li>
+                    {% if has_absolute_url %}<li><a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="grp-state-focus" target="_blank">{% trans "View on site" %}</a></li>{% endif%}
+                {% endblock %}
+            </ul>
+        {% endif %}
+		{% else %}
+        {% if not is_popup %}
+            <ul class="grp-object-tools">
+                {% block object-tools-items-add %}
+                    {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+                    <li class="guide"><a href="{% add_preserved_filters add_url is_popup %}?guide">{% trans "Quick Start Guide" %}</a></li>
                     {% if has_absolute_url %}<li><a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="grp-state-focus" target="_blank">{% trans "View on site" %}</a></li>{% endif%}
                 {% endblock %}
             </ul>
@@ -204,51 +217,81 @@
                 <p class="errornote">{% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}</p>
                 <ul class="errorlist">{% for error in adminform.form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
             {% endif %}
+            <!-- Quick Start Guide -->
+						{% if not request.GET.urlencode|length_is:"0" and request.path|form_get_app_name == "observation" and request.GET.urlencode == "guide=" %}
+								<h1>Quick Start Guide</h1>
+								<h1>{{ request.GET.urlencode }}</h1>
+								<h2>{{ request.GET.urlencode|length }}</h2>
+								
+								
+								
+		            <!-- Return-Row -->
+								<footer class="grp-module grp-submit-row grp-fixed-footer">
+								    <header style="display:none"><h1>Submit Options</h1></header>
+								    <ul>
+													<div id="results"></div>
+													<li><input type=button onClick="location.href='{{ request.path }}'" value="Return" class="grp-button grp-default" name="return" ></li>
+								    </ul>
+								</footer>
+								
+		            {% if adminform %}
+		                {% block extrahead_guide %}
+		                    {{ block.super }}
+		                    <script type="text/javascript">
+		                        (function($){
+		                            $(document).ready(function() {
+		                                $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus();
+																		$("input").blur();																		
+		                            });
+		                        }(grp.jQuery));
+		                    </script>
+		                {% endblock %}
+		            {% endif %}
+						{% else %}
+		            <!-- Fieldsets -->
+		            {% block field_sets %}
+		                {% for fieldset in adminform %}
+		                    {% include "admin/includes/fieldset.html" %}
+											  {% for line in fieldset %}
+											        {% for field in line %}
+											            {% if field.field.name == "longitude" %}
+																			<fieldset class="grp-module "><h2 class="grp-collapse-handler">Map Display</h2>
+																	    {% leaflet_map "map" callback="window.map_init" %}
+																		  </fieldset>
+																		  </br>
+																	{% endif %}
+											        {% endfor %}
+											  {% endfor %}
+		                {% endfor %}
+		            {% endblock %}
             
-            <!-- Fieldsets -->
-            {% block field_sets %}
-                {% for fieldset in adminform %}
-                    {% include "admin/includes/fieldset.html" %}
-									  {% for line in fieldset %}
-									        {% for field in line %}
-									            {% if field.field.name == "location" %}
-																	<fieldset class="grp-module "><h2 class="grp-collapse-handler">Map Display</h2>
-															    {% leaflet_map "map" callback="window.map_init" %}
-																  </fieldset>
-																  </br>
-															{% endif %}
-									        {% endfor %}
-									  {% endfor %}
-                {% endfor %}
-            {% endblock %}
+		            {% block after_field_sets %}{% endblock %}
             
-            {% block after_field_sets %}{% endblock %}
+		            <!-- Inlines -->
+		            {% block inline_field_sets %}
+		                {% for inline_admin_formset in inline_admin_formsets %}
+		                    {% include inline_admin_formset.opts.template %}
+		                {% endfor %}
+		            {% endblock %}
             
-            <!-- Inlines -->
-            {% block inline_field_sets %}
-                {% for inline_admin_formset in inline_admin_formsets %}
-                    {% include inline_admin_formset.opts.template %}
-                {% endfor %}
-            {% endblock %}
+		            {% block after_related_objects %}{% endblock %}
             
-            {% block after_related_objects %}{% endblock %}
+		            <!-- Submit-Row -->
+		            {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
             
-            <!-- Submit-Row -->
-            {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
-            
-            {% if adminform and add %}
-                {% block extrahead %}
-                    {{ block.super }}
-                    <script type="text/javascript">
-                        (function($){
-                            $(document).ready(function() {
-                                $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
-                            });
-                        }(grp.jQuery));
-                    </script>
-                {% endblock %}
+		            {% if adminform and add %}
+		                {% block extrahead %}
+		                    {{ block.super }}
+		                    <script type="text/javascript">
+		                        (function($){
+		                            $(document).ready(function() {
+		                                $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
+		                            });
+		                        }(grp.jQuery));
+		                    </script>
+		                {% endblock %}
+		            {% endif %}
             {% endif %}
-            
             <!-- JS for prepopulated fields -->
             {% prepopulated_fields_js %}
             
