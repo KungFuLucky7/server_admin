@@ -7,15 +7,15 @@ class ObservationAdmin(admin.ModelAdmin):
         (None,               {'fields': ['species']}),
         (None,               {'fields': ['family']}),
         ('Published Date',   {'fields': ['timestamp']}),
-        ('Observation Type', {'fields': ['observation_type']}),
-        ('Latitude',         {'fields': ['latitude']}),
-        ('Longitude',        {'fields': ['longitude']}),
-        ('Location',         {'fields': ['location']}),
-        #('GPS',              {'fields': ['gps']}),    
+        ('Observation Type', {'fields': ['observation_type']}),  
         ('Lifeform', 	     {'fields': ['lifeform']}),
         ('Phenology', 	     {'fields': ['phenology']}),
         ('Habitat', 	     {'fields': ['habitat']}),
         ('On Serpentine', 	 {'fields': ['onserpentine']}),
+        ('Latitude',         {'fields': ['latitude']}),
+        ('Longitude',        {'fields': ['longitude']}),
+        ('Location',         {'fields': ['location']}),
+        #('GPS',              {'fields': ['gps']}),
         ('Number of Plants', {'fields': ['numplants']}),
         ('Image',            {'fields': ['image']}),
         ('Description',      {'fields': ['description'], 'classes': ['grp-collapse grp-open']}),
@@ -40,3 +40,6 @@ class ObservationAdmin(admin.ModelAdmin):
         
 #admin.site.register(Observation, ObservationAdmin)
 admin.site.register(Observation, ObservationResourceAdmin)
+
+from django.contrib.auth.models import Permission
+admin.site.register(Permission)

@@ -164,6 +164,21 @@
         }(grp.jQuery));
     </script>
     {% endif %}
+		{% if adminform and change and not request.user.is_superuser and perms.observations.readonly_observation %}
+    <script type="text/javascript">
+        (function($){
+            $(document).ready(function() {
+						    $('input').attr('readonly', true);
+								$('#return').attr('readonly', false);
+								$('.fb_show').hide();
+						    $('textarea').attr('readonly', true);
+						    $('input:checkbox').attr('disabled', true);
+						    $('select').attr('disabled', true);
+						    $('.add-another').hide();
+		        });
+		    }(grp.jQuery));
+		</script>
+		{% endif %}
 {% endblock %}
 
 <!-- COLTYPE/BODYCLASS -->
@@ -239,7 +254,7 @@
 								    <header style="display:none"><h1>Submit Options</h1></header>
 								    <ul>
 													<div id="results"></div>
-													<li><input type=button onClick="location.href='{{ request.path }}'" value="Return" class="grp-button grp-default" name="return" ></li>
+													<li><input id="return" type=button onClick="window.location.href='{{ request.path }}'" value="Return" class="grp-button grp-default" name="return" ></li>
 								    </ul>
 								</footer>
 						{% else %}
@@ -249,7 +264,7 @@
 		                    {% include "admin/includes/fieldset.html" %}
 											  {% for line in fieldset %}
 											        {% for field in line %}
-											            {% if field.field.name == "longitude" %}
+											            {% if field.field.name == "location" %}
 																			<fieldset class="grp-module "><h2 class="grp-collapse-handler">Map Display</h2>
 																	    {% leaflet_map "map" callback="window.map_init" %}
 																		  </fieldset>
@@ -272,7 +287,18 @@
 		            {% block after_related_objects %}{% endblock %}
             
 		            <!-- Submit-Row -->
-		            {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+								{% if adminform and change and not request.user.is_superuser and perms.observations.readonly_observation %}
+				            <!-- Return-Row -->
+										<footer class="grp-module grp-submit-row grp-fixed-footer">
+										    <header style="display:none"><h1>Submit Options</h1></header>
+										    <ul>
+															<div id="results"></div>
+															<li><input id="return" type=button onclick="window.location.href='{% url opts|admin_urlname:'changelist' %}'" value="Return" class="grp-button grp-default" name="return" ></li>
+										    </ul>
+										</footer>
+								{% else %}
+		            		{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+								{% endif %}
 						{% endif %}
             
             <!-- JS for prepopulated fields -->

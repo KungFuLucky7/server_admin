@@ -189,7 +189,7 @@
 				    <header style="display:none"><h1>Submit Options</h1></header>
 				    <ul>
 									<div id="results"></div>
-									<li><input type=button onClick="location.href='{{ request.path }}'" value="Return" class="grp-button grp-default" name="return" ></li>
+									<li><input type=button onClick="window.location.href='{{ request.path }}'" value="Return" class="grp-button grp-default" name="return" ></li>
 				    </ul>
 				</footer>
 				
@@ -287,14 +287,16 @@
 		        {% endif %}
 						
 						<!-- Upload Link -->
-						{% if request.path|list_get_app_name == "observation" %}	
-				        {% if not cl.result_count == 0 %}
-					      		<div class="grp-module">
-			          		<div class="grp-row">
-		<nav class="grp-pagination"><header style="display:none"><h1>Upload</h1></header><ul>
-						        		{% url cl.opts|admin_urlname:'add' as add_url %}
-												<li><a id="upload" href="{{ model.admin_url }}?e=upload" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Upload{% endblocktrans %}</a></li></li></ul></nav></div></div>
-				        {% endif %}
+						{% if request.path|list_get_app_name == "observation" %}
+								{% if request.user.is_superuser or perms.observations.change_observation and not perms.observations.readonly_observation %}
+						        {% if not cl.result_count == 0 %}
+							      		<div class="grp-module">
+					          		<div class="grp-row">
+				<nav class="grp-pagination"><header style="display:none"><h1>Upload</h1></header><ul>
+								        		{% url cl.opts|admin_urlname:'add' as add_url %}
+														<li><a id="upload" href="{{ model.admin_url }}?e=upload" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Upload{% endblocktrans %}</a></li></li></ul></nav></div></div>
+						        {% endif %}
+								{% endif %}
 						{% endif %}
 
 		        <!-- SUBMIT ROW -->
@@ -302,7 +304,11 @@
 		            <footer id="submit" class="grp-module grp-submit-row grp-fixed-footer">
 		                <header style="display:none"><h1>Submit Options</h1></header>
 		                <ul>
-		                    {% if action_form %}<li class="grp-float-left grp-changelist-actions">{% admin_actions %}</li>{% endif %}
+		                    {% if action_form %}
+														{% if request.user.is_superuser or perms.observations.change_observation and not perms.observations.readonly_observation %}
+																<li class="grp-float-left grp-changelist-actions">{% admin_actions %}</li>
+														{% endif %}
+												{% endif %}
 		                    {% if cl.formset %}<li><input type="submit" class="grp-button grp-default" name="_save" value="{% trans "Save" %}"/></li>{% endif %}
 		                </ul>
 		            </footer>
