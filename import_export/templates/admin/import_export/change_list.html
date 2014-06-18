@@ -294,7 +294,7 @@
 					          		<div class="grp-row">
 				<nav class="grp-pagination"><header style="display:none"><h1>Upload</h1></header><ul>
 								        		{% url cl.opts|admin_urlname:'add' as add_url %}
-														<li><a id="upload" href="{{ model.admin_url }}?e=upload" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Upload{% endblocktrans %}</a></li></li></ul></nav></div></div>
+														<li><a id="upload" href="upload/{{ cl.get_query_string }}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Upload{% endblocktrans %}</a></li></li></ul></nav></div></div>
 						        {% endif %}
 								{% endif %}
 						{% endif %}

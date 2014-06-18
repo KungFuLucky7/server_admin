@@ -221,6 +221,12 @@ class ExportMixin(object):
             url(r'^export/$',
                 self.admin_site.admin_view(self.export_action),
                 name='%s_%s_export' % info),
+            url(r'^upload/$',
+                self.admin_site.admin_view(self.upload_action),
+                name='%s_%s_upload' % info),
+            url(r'^upload_images/$',
+                self.admin_site.admin_view(self.upload_images_action),
+                name='%s_%s_upload_images' % info),
         )
         return my_urls + urls
 
@@ -294,6 +300,108 @@ class ExportMixin(object):
         context['opts'] = self.model._meta
         return TemplateResponse(request, [self.export_template_name],
                                 context, current_app=self.admin_site.name)
+                                
+    # Export action for uploading data to a RESTful server
+    def upload_action(self, request, *args, **kwargs):
+        import requests
+        import logging
+        
+        formats = self.get_export_formats()
+        form = ExportForm(formats, request.POST or None)
+        if form.is_valid():
+            file_format = formats[
+                int(form.cleaned_data['file_format'])
+            ]()
+
+            resource_class = self.get_export_resource_class()
+            queryset = self.get_export_queryset(request)
+            data = resource_class().export(queryset)
+            
+            # Upload data   
+            url_upload_form = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_form/'
+            # url_upload_serializers = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_serializers/'
+            files = {'docfile': (self.get_export_filename(file_format), file_format.export_data(data))}
+            r=requests.post(url_upload_form, data={'title':'file_upload_form'}, files=files)
+            #r=requests.post(url_upload_serializers, data={'title':'file_upload_serializers'}, files=files)
+            logging.info("Data Upload Status Code:")
+            logging.info(r.status_code)
+            
+            if (r.status_code == 200 and 'uploaded' in r.content) and not 'e=success' in request.get_full_path():
+                redirect_path = request.get_full_path().replace('?e=failure', '')+'?e=success'
+                queryset.update(uploaded=True)
+            elif (r.status_code != 200 or 'uploaded' not in r.content) and not 'e=failure' in request.get_full_path():
+                redirect_path = request.get_full_path().replace('?e=success', '')+'?e=failure'
+            else:
+                redirect_path = request.get_full_path()
+            
+            return HttpResponseRedirect(redirect_path)
+            
+        context = {}
+        context['form'] = form
+        context['opts'] = self.model._meta
+        return TemplateResponse(request, [self.export_template_name],
+                                context, current_app=self.admin_site.name)
+                                
+    # Export action for uploading data & images to a RESTful server
+    def upload_images_action(self, request, *args, **kwargs):
+        import requests
+        import logging
+        from django.conf import settings
+        
+        formats = self.get_export_formats()
+        form = ExportForm(formats, request.POST or None)
+        if form.is_valid():
+            file_format = formats[
+                int(form.cleaned_data['file_format'])
+            ]()
+
+            resource_class = self.get_export_resource_class()
+            queryset = self.get_export_queryset(request)
+            data = resource_class().export(queryset)
+            
+            # Upload data   
+            url_upload_form = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_form/'
+            # url_upload_serializers = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_serializers/'
+            files = {'docfile': (self.get_export_filename(file_format), file_format.export_data(data))}
+            r=requests.post(url_upload_form, data={'title':'file_upload_form'}, files=files)
+            #r=requests.post(url_upload_serializers, data={'title':'file_upload_serializers'}, files=files)
+            logging.info("Data Upload Status Code:")
+            logging.info(r.status_code)
+            
+            # Upload images
+            url_upload_form = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_form_images/'
+            # url_upload_serializers = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_serializers_images/'
+            images_list = self.get_export_queryset(request).values_list('image', flat=True).distinct()
+            images_upload_status = True
+            for image in images_list:
+                logging.info(settings.MEDIA_ROOT + '/' + image)
+                image_name = image.replace('uploads/', '')
+                image_path = settings.MEDIA_ROOT + '/' + image
+                image_file = open(settings.MEDIA_ROOT + '/' + image, 'r')
+                data = image_file.read();
+                image = {'image': (image_name, data)}
+                ir=requests.post(url_upload_form, data={'title':'file_upload_form_images'}, files=image)            
+                logging.info("Images Upload Status Code:")
+                logging.info(ir.status_code)
+                if (ir.status_code != 200 or 'uploaded' not in ir.content):
+                    images_upload_status = False
+                
+            if (r.status_code == 200 and 'uploaded' in r.content and images_upload_status) and not 'e=success' in request.get_full_path():
+                redirect_path = request.get_full_path().replace('?e=failure', '')+'?e=success'
+                queryset.update(uploaded=True)
+            elif (r.status_code != 200 or 'uploaded' not in r.content or not images_upload_status) and not 'e=failure' in request.get_full_path():
+                redirect_path = request.get_full_path().replace('?e=success', '')+'?e=failure'
+            else:
+                redirect_path = request.get_full_path()
+            
+            return HttpResponseRedirect(redirect_path)
+            
+        context = {}
+        context['form'] = form
+        context['opts'] = self.model._meta
+        return TemplateResponse(request, [self.export_template_name],
+                                context, current_app=self.admin_site.name)
+
 
 
 class ImportExportMixin(ImportMixin, ExportMixin):

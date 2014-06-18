@@ -146,6 +146,7 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
+    'root': {'level': 'INFO'},
     'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
