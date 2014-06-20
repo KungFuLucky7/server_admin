@@ -6,6 +6,7 @@ class ObservationAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['species']}),
         (None,               {'fields': ['family']}),
+        (None,               {'fields': ['common_name']}),
         ('Published Date',   {'fields': ['timestamp']}),
         ('Observation Type', {'fields': ['observation_type']}),  
         ('Lifeform', 	     {'fields': ['lifeform']}),
@@ -28,9 +29,9 @@ class ObservationAdmin(admin.ModelAdmin):
         ('Validated',        {'fields': ['validated']}),
     ]
     readonly_fields=('timestamp', 'edited_by', 'edited_on')
-    list_display = ('species', 'validated', 'uploaded', 'edited_by', 'edited_on', 'family', 'location', 'timestamp', 'observername', 'devicename', 'was_published_recently')
-    list_filter = ('validated', 'uploaded', 'timestamp', 'edited_on', 'edited_by', 'family', 'location', 'observation_type', 'onserpentine', 'observername', 'devicename')
-    search_fields = ('species', 'family', 'timestamp', 'location', 'lifeform', 'phenology', 'habitat', 'observername', 'devicename',)
+    list_display = ('species', 'validated', 'uploaded', 'edited_by', 'edited_on', 'family', 'common_name', 'location', 'timestamp', 'observername', 'devicename', 'was_published_recently')
+    list_filter = ('validated', 'uploaded', 'timestamp', 'edited_on', 'edited_by', 'family', 'common_name', 'location', 'observation_type', 'onserpentine', 'observername', 'devicename')
+    search_fields = ('species', 'family', 'common_name', 'timestamp', 'location', 'lifeform', 'phenology', 'habitat', 'observername', 'devicename')
     date_hierarchy = 'timestamp'
     ordering = ['species']
 
