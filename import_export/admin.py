@@ -326,11 +326,22 @@ class ExportMixin(object):
             logging.info("Data Upload Status Code:")
             logging.info(r.status_code)
             
-            if (r.status_code == 200 and 'uploaded' in r.content) and not 'e=success' in request.get_full_path():
-                redirect_path = request.get_full_path().replace('?e=failure', '')+'?e=success'
+            if r.status_code == 200 and 'uploaded' in r.content and "?" not in request.get_full_path():
+                redirect_path = request.get_full_path()+'?e=success'
                 queryset.update(uploaded=True)
-            elif (r.status_code != 200 or 'uploaded' not in r.content) and not 'e=failure' in request.get_full_path():
-                redirect_path = request.get_full_path().replace('?e=success', '')+'?e=failure'
+            elif r.status_code == 200 and 'uploaded' in r.content and "?" in request.get_full_path() and not 'e=success' in request.get_full_path():
+                if "?e=failure" in request.get_full_path():
+                    redirect_path = request.get_full_path().replace('?e=failure', '')+'?e=success'
+                else:
+                    redirect_path = request.get_full_path().replace('&e=failure', '')+'&e=success'
+                queryset.update(uploaded=True)
+            elif (r.status_code != 200 or 'uploaded' not in r.content) and "?" not in request.get_full_path():
+                redirect_path = request.get_full_path()+'?e=failure'
+            elif (r.status_code != 200 or 'uploaded' not in r.content) and "?" in request.get_full_path() and not 'e=failure' in request.get_full_path():
+                if "?e=success" in request.get_full_path():
+                    redirect_path = request.get_full_path().replace('?e=success', '')+'?e=failure'
+                else:
+                    redirect_path = request.get_full_path().replace('&e=success', '')+'&e=failure'                    
             else:
                 redirect_path = request.get_full_path()
             
@@ -386,11 +397,22 @@ class ExportMixin(object):
                 if (ir.status_code != 200 or 'uploaded' not in ir.content):
                     images_upload_status = False
                 
-            if (r.status_code == 200 and 'uploaded' in r.content and images_upload_status) and not 'e=success' in request.get_full_path():
-                redirect_path = request.get_full_path().replace('?e=failure', '')+'?e=success'
+            if r.status_code == 200 and 'uploaded' in r.content and images_upload_status and "?" not in request.get_full_path():
+                redirect_path = request.get_full_path()+'?e=success'
                 queryset.update(uploaded=True)
-            elif (r.status_code != 200 or 'uploaded' not in r.content or not images_upload_status) and not 'e=failure' in request.get_full_path():
-                redirect_path = request.get_full_path().replace('?e=success', '')+'?e=failure'
+            elif r.status_code == 200 and 'uploaded' in r.content and images_upload_status and "?" in request.get_full_path() and not 'e=success' in request.get_full_path():
+                if "?e=failure" in request.get_full_path():
+                    redirect_path = request.get_full_path().replace('?e=failure', '')+'?e=success'
+                else:
+                    redirect_path = request.get_full_path().replace('&e=failure', '')+'&e=success'
+                queryset.update(uploaded=True)
+            elif (r.status_code != 200 or 'uploaded' not in r.content or not images_upload_status) and "?" not in request.get_full_path():
+                redirect_path = request.get_full_path()+'?e=failure'
+            elif (r.status_code != 200 or 'uploaded' not in r.content or not images_upload_status) and "?" in request.get_full_path() and not 'e=failure' in request.get_full_path():
+                if "?e=success" in request.get_full_path():
+                    redirect_path = request.get_full_path().replace('?e=success', '')+'?e=failure'
+                else:
+                    redirect_path = request.get_full_path().replace('&e=success', '')+'&e=failure'
             else:
                 redirect_path = request.get_full_path()
             

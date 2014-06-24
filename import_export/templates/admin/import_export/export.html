@@ -5,83 +5,77 @@
 {% load import_export_tags %}
 {% load observations %}
 
+<!-- STYLESHEETS -->
+{% block stylesheets %}
+    {{ block.super }}
+    {{ media.css }}
+		<link rel="stylesheet" href="/static/observations.css">
+{% endblock %}
+
 <!-- JAVASCRIPTS -->
 {% block javascripts %}
   {{ block.super }}
-  <style>
-  .ui-progressbar-value {
-     background-color: #4fb2d3;
-  }
-  .ui-progressbar {
-    position: relative;
-  }
-  .progress-label {
-    position: absolute;
-    left: 50%;
-    top: 4px;
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #fff;
-  }
-  </style>
-	  <script type="text/javascript" charset="utf-8">
-		  (function($) {
-		    $(document).ready(function() {
-				  $("#submit").focus(function() {this.blur();});						
-		  			// $(".progress-label").text("Uploading...");
-		  			// 				    $("#progressbar").progressbar({
-		  			// 				    	value: false
-		  			// 				    });
+  <script type="text/javascript" charset="utf-8">
+	(function($) {
+	    $(document).ready(function() {
+					$("#submit").focus(function() {
+							this.blur();
+					});						
+		  		// $(".progress-label").text("Uploading...");
+		  		// $("#progressbar").progressbar({
+		  		// 		value: false
+		  		// });
 					var url_array = location.href.split('/');
 					var page = url_array[url_array.length-2];
 					if (page == "upload_images")
-						$("input.action-select").prop('checked', true);
-					
+							$("input.action-select").prop('checked', true);
+				
 					$("#include_images").change(function() {
-					    if (this.checked) {
-								if (page == "upload") {
-									url_array[url_array.length-2] = "upload_images";
-									url = url_array.join('/');
-									location.replace(url);
-								}
+							if (this.checked) {
+									if (page == "upload") {
+											url_array[url_array.length-2] = "upload_images";
+											url = url_array.join('/');
+											location.replace(url);
+									}
 					    }
 							else {
-								if (page == "upload_images") {
-									url_array[url_array.length-2] = "upload";
-									url = url_array.join('/');
-									location.replace(url);
-								}
+									if (page == "upload_images") {
+											url_array[url_array.length-2] = "upload";
+											url = url_array.join('/');
+											location.replace(url);
+									}
 							}
 					});
 					var status = navigator.onLine;
 					if ((page == "upload" || page == "upload_images") && status) {
-						var querystring = location.search.replace( '?', '' ).split( '&' );				
-						if (querystring == "e=success") {
-							$(".grp-module").remove();
-							$(".form-row").append("<div class='grp-module'><h1>&nbsp;&nbsp;The observation entries were successfully uploaded to <a href='http://restservercloud-serveradmin.rhcloud.com/admin/'>restservercloud-serveradmin.rhcloud.com</a>!</h1></div>");
-						}
-						else if (querystring == "e=failure") {
-							$(".grp-module").remove();
-							$(".form-row").append("<div class='grp-module'><h1>&nbsp;&nbsp;Error: The observation entries were not successfully uploaded!</h1></div>");
-						}
-
-						$("#submit").click(function() {
-								if ($("#id_file_format").val() != "") {
+							var querystring = location.search.replace( '?', '' ).split( '&' );				
+							if (querystring.indexOf("e=success") !== -1) {
 									$(".grp-module").remove();
-							  	$(".progress-label").text("Uploading...");
-							    $("#progressbar").progressbar({
-							    	value: false
-							    });
-								}
-						});
+									$(".form-row").append("<div class='grp-module'><h1>&nbsp;&nbsp;The observation entries were successfully uploaded to <a href='http://restservercloud-serveradmin.rhcloud.com/admin/'>restservercloud-serveradmin.rhcloud.com</a>!</h1></div>");
+							}
+							else if (querystring.indexOf("e=failure") !== -1) {
+									$(".grp-module").remove();
+									$(".form-row").append("<div class='grp-module'><h1>&nbsp;&nbsp;Error: The observation entries were not successfully uploaded!</h1></div>");
+							}
+
+							$("#submit").click(function() {
+									if ($("#id_file_format").val() != "") {
+											$(".grp-module").remove();
+							  			$(".progress-label").text("Uploading...");
+							    		$("#progressbar").progressbar({
+							    				value: false
+							    		});
+									}
+							});
 					}
 					else if ((page == "upload" || page == "upload_images") && !status) {
-						$(".grp-module").remove();
-						$(".form-row").append("<div class='grp-module'><h1>&nbsp;&nbsp;Error: There's no Internet connection for an upload!</h1></div>");
-						$(".submit-row").hide();
+							$(".grp-module").remove();
+							$(".form-row").append("<div class='grp-module'><h1>&nbsp;&nbsp;Error: There's no Internet connection for uploading observation entries!</h1></div>");
+							$(".submit-row").hide();
 					}
-		    });
-		  })(grp.jQuery);
-		</script>
+	    });
+	})(grp.jQuery);
+	</script>
 {% endblock %}
 
 {% block breadcrumbs_last %}
