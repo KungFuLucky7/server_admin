@@ -89,3 +89,16 @@ body.grp-login .grp-module-login h1 span.grp-admin-title {
   height: 34px;
   width: 70px;
 }
+
+#change-guide {
+  margin-right: 820px;
+}
+
+#add-guide {
+  margin-right: 940px;
+}
+
+#ob-title {
+  text-align: center;
+  margin-top: -30px;
+}
