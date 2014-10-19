@@ -129,6 +129,8 @@
     <script type="text/javascript" charset="utf-8">
         (function($) {
             $(document).ready(function() {
+                // enable tooltip
+                $(document).tooltip();
 							  if (!$('div').hasClass('grp-changelist-results')) {
 										$('a[class=export_link]').attr('href', window.location);
 										var querystring = location.search.replace( '?', '' ).split( '&' );
@@ -166,11 +168,15 @@
         <ul class="grp-object-tools">
             {% block object-tools-items %}
                 {% url cl.opts|admin_urlname:'add' as add_url %}
-								{{ block.super }}
-								{% if request.path|list_get_app_name == "observation" %}		
-								<li class="guide"><a href="{{ model.admin_url }}?e=guide" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Quick Start Guide{% endblocktrans %}</a></li>
-								{% endif %}
-                <li><a href="{% add_preserved_filters add_url is_popup %}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}</a></li>
+                {{ block.super }}
+                {% if request.path|list_get_app_name == "observation" %}		
+                    <li class="guide" id="list-guide" title="This is a guide to help you with the Admin UI Web App."><a href="{{ model.admin_url }}?e=guide" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Quick Start Guide{% endblocktrans %}</a></li>
+                {% endif %}
+                    <li><a href="{% add_preserved_filters add_url is_popup %}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}</a></li>
+		            {% if request.path|list_get_app_name == "observation" %}
+                    <!-- Adding Upload Link -->
+                    <li><a href="upload/{{ cl.get_query_string }}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Upload{% endblocktrans %}</a></li>
+		            {% endif %}
             {% endblock %}
         </ul>
     {% endif %}
@@ -418,19 +424,6 @@
 		                </div>
 		            {% endblock %}
 		        {% endif %}
-						
-						<!-- Upload Link -->
-						{% if request.path|list_get_app_name == "observation" %}
-								{% if request.user.is_superuser or perms.observations.change_observation and not perms.observations.readonly_observation %}
-						        {% if not cl.result_count == 0 %}
-							      		<div class="grp-module">
-					          		<div class="grp-row">
-				<nav class="grp-pagination"><header style="display:none"><h1>Upload</h1></header><ul>
-								        		{% url cl.opts|admin_urlname:'add' as add_url %}
-														<li><a id="upload" href="upload/{{ cl.get_query_string }}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Upload{% endblocktrans %}</a></li></li></ul></nav></div></div>
-						        {% endif %}
-								{% endif %}
-						{% endif %}
 
 		        <!-- SUBMIT ROW -->
 		        {% if cl.formset or action_form %}
@@ -439,7 +432,8 @@
 		                <ul>
 		                    {% if action_form %}
 														{% if request.user.is_superuser or perms.observations.change_observation and not perms.observations.readonly_observation %}
-																<li class="grp-float-left grp-changelist-actions">{% admin_actions %}</li>
+																<li id="batch-delete-title" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Batch Delete Option >>{% endblocktrans %}</li>
+																<li id="batch-delete-option" class="grp-float-left grp-changelist-actions">{% admin_actions %}</li>
 														{% endif %}
 												{% endif %}
 		                    {% if cl.formset %}<li><input type="submit" class="grp-button grp-default" name="_save" value="{% trans "Save" %}"/></li>{% endif %}

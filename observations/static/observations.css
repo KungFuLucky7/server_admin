@@ -35,11 +35,6 @@
   background: linear-gradient(#36b0d9,#309bbf)
 }
 
-#upload {
-  font-size: 18px;
-  background: linear-gradient(#ffffff,#B8B8B8);
-}
-
 .ui-progressbar-value {
   background-color: #4fb2d3;
 }
@@ -90,6 +85,10 @@ body.grp-login .grp-module-login h1 span.grp-admin-title {
   width: 70px;
 }
 
+#list-guide {
+  margin-right: 590px;
+}
+
 #change-guide {
   margin-right: 820px;
 }
@@ -100,5 +99,25 @@ body.grp-login .grp-module-login h1 span.grp-admin-title {
 
 #ob-title {
   text-align: center;
-  margin-top: -30px;
+  margin-top: -55px;
+  padding-bottom: 10px;
+}
+
+#batch-delete-title {
+  float: left;
+  margin-top: 5px;
+  margin-left: -5px;
+  font-size: 15px;
+  background: linear-gradient(#ffffff,#B8B8B8);
+  color: #309bbf;
+  font-weight: bold;
+}
+
+#batch-delete-option {
+  margin-left: 10px;
+}
+
+.ui-tooltip {
+  background: yellow;
+  border-radius: 10px;
 }
