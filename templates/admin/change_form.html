@@ -157,6 +157,8 @@
     <script type="text/javascript">
         (function($){
             $(document).ready(function() {
+                // enable tooltip
+                $(document).tooltip();
                 $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus();
 								if ($("#id_species").length == 0)
 										$("input").blur();
@@ -168,6 +170,8 @@
     <script type="text/javascript">
         (function($){
             $(document).ready(function() {
+                // enable tooltip
+                $(document).tooltip();
                 var species = $("#id_species").val();
                 if (species.length)
                     $("#grp-content-title").append("<div id='ob-title'><h1>" + species + "</h1></div>");
@@ -229,16 +233,16 @@
 										{% if request.path|form_get_app_name == "observation" %}
                         {% if change %}
                             {% if request.GET.urlencode|length_is:"0" %}
-                                <li class="guide" id="change-guide"><a href="{% add_preserved_filters add_url is_popup %}?e=guide">{% trans "Quick Start Guide" %}</a></li>
+                                <li class="guide" id="change-guide" title="This is a guide to help you with the Admin UI Web App."><a href="{% add_preserved_filters add_url is_popup %}?e=guide">{% trans "Quick Start Guide" %}</a></li>
                             {% else %}
-                                <li class="guide" id="change-guide"><a href="{% add_preserved_filters add_url is_popup %}&e=guide">{% trans "Quick Start Guide" %}</a></li>
+                                <li class="guide" id="change-guide" title="This is a guide to help you with the Admin UI Web App."><a href="{% add_preserved_filters add_url is_popup %}&e=guide">{% trans "Quick Start Guide" %}</a></li>
                             {% endif %}
                         {% endif %}
                         {% if add %}
                             {% if request.GET.urlencode|length_is:"0" %}
-                                <li class="guide" id="add-guide"><a href="{% add_preserved_filters add_url is_popup %}?e=guide">{% trans "Quick Start Guide" %}</a></li>
+                                <li class="guide" id="add-guide" title="This is a guide to help you with the Admin UI Web App."><a href="{% add_preserved_filters add_url is_popup %}?e=guide">{% trans "Quick Start Guide" %}</a></li>
                             {% else %}
-                                <li class="guide" id="add-guide"><a href="{% add_preserved_filters add_url is_popup %}&e=guide">{% trans "Quick Start Guide" %}</a></li>
+                                <li class="guide" id="add-guide" title="This is a guide to help you with the Admin UI Web App."><a href="{% add_preserved_filters add_url is_popup %}&e=guide">{% trans "Quick Start Guide" %}</a></li>
                             {% endif %}
                         {% endif %}
                     {% endif %}
