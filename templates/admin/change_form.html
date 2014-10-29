@@ -167,8 +167,8 @@
 								url_parts.splice(6, 2);
 								url = url_parts.join('/');
                 var querystring = location.search.replace( '?', '' ).split( '&' ).toString();
-								querystring = decodeURIComponent(querystring.substring(querystring.indexOf("=") + 1));
-								if (typeof querystring !== 'undefined') {
+								if (querystring) {
+								    querystring = decodeURIComponent(querystring.substring(querystring.indexOf("=") + 1));
                     $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '?' + querystring + '\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
 								}								
 								else {
@@ -189,8 +189,8 @@
 								url_parts.splice(6, 2);
 								url = url_parts.join('/');
                 var querystring = location.search.replace( '?', '' ).split( '&' ).toString();
-								querystring = decodeURIComponent(querystring.substring(querystring.indexOf("=") + 1));
-								if (typeof querystring !== 'undefined') {
+								if (querystring) {
+                    querystring = decodeURIComponent(querystring.substring(querystring.indexOf("=") + 1));
                     $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '?' + querystring + '\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
 								}								
 								else {
