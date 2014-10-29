@@ -1,5 +1,6 @@
 from django import template
 from django.template.defaultfilters import stringfilter
+import urllib2
 
 register = template.Library()
 
@@ -25,3 +26,10 @@ def trim_url(value):
     url_parts.remove(url_parts[4])
     url = '/'.join(url_parts)
     return url
+    
+@register.filter
+@stringfilter
+def modify_query_string(value):
+    """In form view, modify the query string to the correct format"""
+    query_string = value.split('=', 1)
+    return urllib2.unquote(query_string[1])

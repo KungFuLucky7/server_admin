@@ -162,6 +162,18 @@
                 $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus();
 								if ($("#id_species").length == 0)
 										$("input").blur();
+                var url = window.location.href;
+								var url_parts = url.split('/');
+								url_parts.splice(6, 2);
+								url = url_parts.join('/');
+                var querystring = location.search.replace( '?', '' ).split( '&' ).toString();
+								querystring = decodeURIComponent(querystring.substring(querystring.indexOf("=") + 1));
+								if (typeof querystring !== 'undefined') {
+                    $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '?' + querystring + '\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
+								}								
+								else {
+                    $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
+								}
             });
         }(grp.jQuery));
     </script>
@@ -172,6 +184,18 @@
             $(document).ready(function() {
                 // enable tooltip
                 $(document).tooltip();
+                var url = window.location.href;
+								var url_parts = url.split('/');
+								url_parts.splice(6, 2);
+								url = url_parts.join('/');
+                var querystring = location.search.replace( '?', '' ).split( '&' ).toString();
+								querystring = decodeURIComponent(querystring.substring(querystring.indexOf("=") + 1));
+								if (typeof querystring !== 'undefined') {
+                    $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '?' + querystring + '\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
+								}								
+								else {
+                    $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
+								}
                 var species = $("#id_species").val();
                 if (species.length)
                     $("#grp-content-title").append("<div id='ob-title'><h1>" + species + "</h1></div>");
@@ -445,8 +469,12 @@
 										<footer class="grp-module grp-submit-row grp-fixed-footer">
 										    <header style="display:none"><h1>Submit Options</h1></header>
 										    <ul>
-															<div id="results"></div>
-															<li><input id="return" type=button onclick="window.location.href='{% url opts|admin_urlname:'changelist' %}'" value="Return" class="grp-button grp-default" name="return" ></li>
+												<div id="results"></div>
+												    {% if not request.GET.urlencode|length_is:"0" %}
+														    <li><input id="return" type=button onclick="window.location.href='{% url opts|admin_urlname:'changelist' %}?{{ request.GET.urlencode|modify_query_string }}'" value="Return" class="grp-button grp-default" name="return" ></li>
+														{% else %}
+														    <li><input id="return" type=button onclick="window.location.href='{% url opts|admin_urlname:'changelist' %}'" value="Return" class="grp-button grp-default" name="return" ></li>
+                            {% endif %}
 										    </ul>
 										</footer>
 								{% else %}
