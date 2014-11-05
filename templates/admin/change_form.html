@@ -164,7 +164,7 @@
 										$("input").blur();
                 var url = window.location.href;
                 var url_parts = url.split('/');
-                url_parts.splice(6, 2);
+                url_parts.splice(7, 2);
                 url = url_parts.join('/');
                 $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '/\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
             });
@@ -179,7 +179,7 @@
                 $(document).tooltip();
                 var url = window.location.href;
                 var url_parts = url.split('/');
-                url_parts.splice(6, 2);
+                url_parts.splice(7, 2);
                 url = url_parts.join('/');
                 $("input[name='_continue']").parent().parent().append('<li><input id="return" onclick="window.location.href=\'' + url + '/\'" value="Return" class="grp-button grp-default" name="return" type="button"></li>');
                 var species = $("#id_species").val();
