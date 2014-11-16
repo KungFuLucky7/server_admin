@@ -451,11 +451,11 @@
 		                <header style="display:none"><h1>Submit Options</h1></header>
 		                <ul>
 		                    {% if action_form %}
-														{% if request.user.is_superuser or perms.observations.change_observation and not perms.observations.readonly_observation %}
-																<li id="batch-delete-title" class="addlink" title="The below batch delete menu is for deleting the multiple selected observation entries.">{% blocktrans with cl.opts.verbose_name as name %}Batch Delete Option >>{% endblocktrans %}</li>
-																<li id="batch-delete-option" class="grp-float-left grp-changelist-actions">{% admin_actions %}</li>
-														{% endif %}
-												{% endif %}
+                            {% if request.user.is_superuser or perms.observations.change_observation and not perms.observations.readonly_observation %}
+                                <li class="grp-float-right grp-changelist-actions">{% admin_actions %}</li>
+                                <li id="batch-delete-title" class="grp-float-right addlink" title="The below batch delete menu is for deleting the multiple selected observation entries.">{% blocktrans with cl.opts.verbose_name as name %}Batch Delete Option >>{% endblocktrans %}</li>
+                            {% endif %}
+                        {% endif %}
 		                    {% if cl.formset %}<li><input type="submit" class="grp-button grp-default" name="_save" value="{% trans "Save" %}"/></li>{% endif %}
 		                </ul>
 		            </footer>
