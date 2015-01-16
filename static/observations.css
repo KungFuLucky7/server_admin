@@ -77,11 +77,8 @@ ol {
 }
 
 body.grp-login .grp-module-login h1 span.grp-admin-title {
-  padding: 5px 10px 28px 7px;
-}
-
-.grp-admin-title {
-  text-align: -webkit-center;
+  padding: 5px 10px 30px 7px;
+  text-align: center;
 }
 
 #login-submit-btn {
@@ -112,17 +109,11 @@ body.grp-login .grp-module-login h1 span.grp-admin-title {
 }
 
 #batch-delete-title {
-  float: left;
   margin-top: 5px;
-  margin-left: -5px;
   font-size: 15px;
   background: linear-gradient(#ffffff,#B8B8B8);
   color: #309bbf;
   font-weight: bold;
-}
-
-#batch-delete-option {
-  margin-left: 10px;
 }
 
 .ui-tooltip {
