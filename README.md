@@ -9,7 +9,7 @@ Backup commands
 Backup Groups data:
 python manage.py dumpdata auth.Group > Group.json
 
-Backup Users data:
+Backup Permissions data:
 python manage.py dumpdata auth.Permission > Permission.json
 
 Backup Users data:
