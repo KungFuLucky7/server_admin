@@ -22,3 +22,4 @@ python manage.py dumpdata observations > observations/fixtures/initial_data.json
 Cloud version hosted on OpenShift
 ---------------
 http://serveradmincloud-serveradmin.rhcloud.com/
+
