@@ -280,20 +280,29 @@ class ExportMixin(object):
         formats = self.get_export_formats()
         form = ExportForm(formats, request.POST or None)
         if form.is_valid():
-            file_format = formats[
-                int(form.cleaned_data['file_format'])
-            ]()
-
             resource_class = self.get_export_resource_class()
             queryset = self.get_export_queryset(request)
-            data = resource_class().export(queryset)
-            response = HttpResponse(
-                file_format.export_data(data),
-                mimetype='application/octet-stream',
-            )
-            response['Content-Disposition'] = 'attachment; filename=%s' % (
-                self.get_export_filename(file_format),
-            )
+                        
+            if int(form.cleaned_data['file_format']) == 7:
+                from django.core import serializers
+                
+                data = serializers.serialize('xml', queryset)
+                filename = "%s-%s" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
+                response = HttpResponse(data, content_type="application/x-download")
+                response["Content-Disposition"] = "attachment;filename=" + filename + ".xml"
+            else:
+                file_format = formats[
+                    int(form.cleaned_data['file_format'])
+                ]()
+                data = resource_class().export(queryset)
+                response = HttpResponse(
+                    file_format.export_data(data),
+                    content_type='application/octet-stream',
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % (
+                    self.get_export_filename(file_format),
+                )
+            
             return response
 
         context = {}

@@ -49,5 +49,6 @@ class ExportForm(forms.Form):
             choices.append((str(i), f().get_title(),))
         if len(formats) > 1:
             choices.insert(0, ('', '---'))
+            choices.insert(8, (str('7'), str('xml')))
 
         self.fields['file_format'].choices = choices
