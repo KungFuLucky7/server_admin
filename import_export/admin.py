@@ -39,6 +39,7 @@ DEFAULT_FORMATS = (
     base_formats.ODS,
     base_formats.TSV,
     base_formats.XLS,
+    base_formats.XLSX,
     base_formats.YAML,
 )
 
