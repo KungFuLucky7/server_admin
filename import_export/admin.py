@@ -282,11 +282,24 @@ class ExportMixin(object):
         if form.is_valid():
             resource_class = self.get_export_resource_class()
             queryset = self.get_export_queryset(request)
-                        
+            
+            # Add support for exporting data in xml format
             if int(form.cleaned_data['file_format']) == 7:
                 from django.core import serializers
                 
                 data = serializers.serialize('xml', queryset)
+                
+                # Format xml data
+                data = data.replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", "")
+                data = data.replace("<django-objects version=\"1.0\">", "")
+                data = data.replace("<object", "\n\t<object")
+                data = data.replace("<field", "\n\t\t<field")
+                data = data.replace("</object>", "\n\t</object>")
+                data = data.replace("</django-objects>", "")
+                data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<django-objects version=\"1.0\">" + data + "\n\n</django-objects>"
+                import os
+                data = os.linesep.join([s for s in data.splitlines() if s])
+                
                 filename = "%s-%s" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
                 response = HttpResponse(data, content_type="application/x-download")
                 response["Content-Disposition"] = "attachment;filename=" + filename + ".xml"
