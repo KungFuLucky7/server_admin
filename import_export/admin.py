@@ -303,7 +303,7 @@ class ExportMixin(object):
             queryset = self.get_export_queryset(request)
 
             # Add support for exporting data in xml format
-            if int(form.cleaned_data['file_format']) == 7:                
+            if int(form.cleaned_data['file_format']) == 8:
                 data = serializers.serialize('xml', queryset)
                 data = self.format_xml(data)
                 filename = "%s-%s.xml" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
@@ -339,7 +339,7 @@ class ExportMixin(object):
             queryset = self.get_export_queryset(request)
 
             # Add support for uploading data in xml format
-            if int(form.cleaned_data['file_format']) == 7:                
+            if int(form.cleaned_data['file_format']) == 8:
                 data = serializers.serialize('xml', queryset)
                 data = self.format_xml(data)
                 filename = "%s-%s.xml" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
@@ -395,7 +395,7 @@ class ExportMixin(object):
             queryset = self.get_export_queryset(request)
 
             # Add support for uploading data in xml format
-            if int(form.cleaned_data['file_format']) == 7:                
+            if int(form.cleaned_data['file_format']) == 8:
                 data = serializers.serialize('xml', queryset)
                 data = self.format_xml(data)
                 filename = "%s-%s.xml" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
