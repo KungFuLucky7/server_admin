@@ -2,7 +2,7 @@ from __future__ import with_statement
 
 import tempfile
 from datetime import datetime
-import os.path
+import os
 
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
@@ -24,6 +24,11 @@ from .resources import (
 )
 from .formats import base_formats
 from .results import RowResult
+
+from django.core import serializers
+import requests
+import logging
+from django.conf import settings
 
 try:
     from django.utils.encoding import force_text
@@ -276,24 +281,47 @@ class ExportMixin(object):
 
         return cl.query_set
 
+    def format_xml(self, data):
+        """
+        Format xml data.
+        """
+        data = data.replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", "")
+        data = data.replace("<django-objects version=\"1.0\">", "")
+        data = data.replace("<object", "\n\t<object")
+        data = data.replace("<field", "\n\t\t<field")
+        data = data.replace("</object>", "\n\t</object>")
+        data = data.replace("</django-objects>", "")
+        data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<django-objects version=\"1.0\">" + data + "\n\n</django-objects>"
+        data = os.linesep.join([s for s in data.splitlines() if s])
+        return data
+
     def export_action(self, request, *args, **kwargs):
         formats = self.get_export_formats()
         form = ExportForm(formats, request.POST or None)
         if form.is_valid():
-            file_format = formats[
-                int(form.cleaned_data['file_format'])
-            ]()
-
             resource_class = self.get_export_resource_class()
             queryset = self.get_export_queryset(request)
-            data = resource_class().export(queryset)
-            response = HttpResponse(
-                file_format.export_data(data),
-                mimetype='application/octet-stream',
-            )
-            response['Content-Disposition'] = 'attachment; filename=%s' % (
-                self.get_export_filename(file_format),
-            )
+
+            # Add support for exporting data in xml format
+            if int(form.cleaned_data['file_format']) == 7:                
+                data = serializers.serialize('xml', queryset)
+                data = self.format_xml(data)
+                filename = "%s-%s.xml" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
+                response = HttpResponse(data, content_type="application/x-download")
+                response["Content-Disposition"] = "attachment;filename=" + filename
+            else:
+                file_format = formats[
+                    int(form.cleaned_data['file_format'])
+                ]()
+                data = resource_class().export(queryset)
+                response = HttpResponse(
+                    file_format.export_data(data),
+                    content_type='application/octet-stream',
+                )
+                response['Content-Disposition'] = 'attachment; filename=%s' % (
+                    self.get_export_filename(file_format),
+                )
+
             return response
 
         context = {}
@@ -301,32 +329,36 @@ class ExportMixin(object):
         context['opts'] = self.model._meta
         return TemplateResponse(request, [self.export_template_name],
                                 context, current_app=self.admin_site.name)
-                                
+
     # Export action for uploading data to a RESTful server
     def upload_action(self, request, *args, **kwargs):
-        import requests
-        import logging
-        
         formats = self.get_export_formats()
         form = ExportForm(formats, request.POST or None)
         if form.is_valid():
-            file_format = formats[
-                int(form.cleaned_data['file_format'])
-            ]()
-
             resource_class = self.get_export_resource_class()
             queryset = self.get_export_queryset(request)
-            data = resource_class().export(queryset)
-            
+
+            # Add support for uploading data in xml format
+            if int(form.cleaned_data['file_format']) == 7:                
+                data = serializers.serialize('xml', queryset)
+                data = self.format_xml(data)
+                filename = "%s-%s.xml" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
+                files = {'docfile': (filename, data)}
+            else:
+                file_format = formats[
+                    int(form.cleaned_data['file_format'])
+                ]()
+                data = resource_class().export(queryset)
+                files = {'docfile': (self.get_export_filename(file_format), file_format.export_data(data))}
+
             # Upload data   
             url_upload_form = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_form/'
             # url_upload_serializers = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_serializers/'
-            files = {'docfile': (self.get_export_filename(file_format), file_format.export_data(data))}
             r=requests.post(url_upload_form, data={'title':'file_upload_form'}, files=files)
             #r=requests.post(url_upload_serializers, data={'title':'file_upload_serializers'}, files=files)
             logging.info("Data Upload Status Code:")
             logging.info(r.status_code)
-            
+
             if r.status_code == 200 and 'uploaded' in r.content and "?" not in request.get_full_path():
                 redirect_path = request.get_full_path()+'?e=success'
                 queryset.update(uploaded=True)
@@ -345,41 +377,44 @@ class ExportMixin(object):
                     redirect_path = request.get_full_path().replace('&e=success', '')+'&e=failure'                    
             else:
                 redirect_path = request.get_full_path()
-            
+
             return HttpResponseRedirect(redirect_path)
-            
+
         context = {}
         context['form'] = form
         context['opts'] = self.model._meta
         return TemplateResponse(request, [self.export_template_name],
                                 context, current_app=self.admin_site.name)
-                                
+
     # Export action for uploading data & images to a RESTful server
     def upload_images_action(self, request, *args, **kwargs):
-        import requests
-        import logging
-        from django.conf import settings
-        
         formats = self.get_export_formats()
         form = ExportForm(formats, request.POST or None)
         if form.is_valid():
-            file_format = formats[
-                int(form.cleaned_data['file_format'])
-            ]()
-
             resource_class = self.get_export_resource_class()
             queryset = self.get_export_queryset(request)
-            data = resource_class().export(queryset)
-            
+
+            # Add support for uploading data in xml format
+            if int(form.cleaned_data['file_format']) == 7:                
+                data = serializers.serialize('xml', queryset)
+                data = self.format_xml(data)
+                filename = "%s-%s.xml" % (queryset.model.__name__, datetime.now().strftime('%m-%d-%Y'))
+                files = {'docfile': (filename, data)}
+            else:
+                file_format = formats[
+                    int(form.cleaned_data['file_format'])
+                ]()
+                data = resource_class().export(queryset)
+                files = {'docfile': (self.get_export_filename(file_format), file_format.export_data(data))}
+
             # Upload data   
             url_upload_form = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_form/'
             # url_upload_serializers = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_serializers/'
-            files = {'docfile': (self.get_export_filename(file_format), file_format.export_data(data))}
             r=requests.post(url_upload_form, data={'title':'file_upload_form'}, files=files)
             #r=requests.post(url_upload_serializers, data={'title':'file_upload_serializers'}, files=files)
             logging.info("Data Upload Status Code:")
             logging.info(r.status_code)
-            
+
             # Upload images
             url_upload_form = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_form_images/'
             # url_upload_serializers = 'http://restservercloud-serveradmin.rhcloud.com/api/upload_serializers_images/'
@@ -397,7 +432,7 @@ class ExportMixin(object):
                 logging.info(ir.status_code)
                 if (ir.status_code != 200 or 'uploaded' not in ir.content):
                     images_upload_status = False
-                
+
             if r.status_code == 200 and 'uploaded' in r.content and images_upload_status and "?" not in request.get_full_path():
                 redirect_path = request.get_full_path()+'?e=success'
                 queryset.update(uploaded=True)
@@ -416,15 +451,14 @@ class ExportMixin(object):
                     redirect_path = request.get_full_path().replace('&e=success', '')+'&e=failure'
             else:
                 redirect_path = request.get_full_path()
-            
+
             return HttpResponseRedirect(redirect_path)
-            
+
         context = {}
         context['form'] = form
         context['opts'] = self.model._meta
         return TemplateResponse(request, [self.export_template_name],
                                 context, current_app=self.admin_site.name)
-
 
 
 class ImportExportMixin(ImportMixin, ExportMixin):

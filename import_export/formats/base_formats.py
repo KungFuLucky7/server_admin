@@ -4,17 +4,13 @@ import warnings
 import tablib
 
 try:
-    from tablib.compat import xlrd
-    XLS_IMPORT = True
+    import xlrd
+    XLRD_IMPORT = True
 except ImportError:
-    try:
-        import xlrd # NOQA
-        XLS_IMPORT = True
-    except ImportError:
-        xls_warning = "Installed `tablib` library does not include"
-        "import support for 'xls' format and xlrd module is not found."
-        warnings.warn(xls_warning, ImportWarning)
-        XLS_IMPORT = False
+    xlrd_warning = "Installed `tablib` library does not include"
+    "import support for 'xls' and 'xlsx' format and xlrd module is not found."
+    warnings.warn(xlrd_warning, ImportWarning)
+    XLRD_IMPORT = False
 
 from django.utils.importlib import import_module
 from django.utils import six
@@ -135,10 +131,6 @@ class ODS(TextFormat):
     TABLIB_MODULE = 'tablib.formats._ods'
 
 
-class XLSX(TextFormat):
-    TABLIB_MODULE = 'tablib.formats._xlsx'
-
-
 class HTML(TextFormat):
     TABLIB_MODULE = 'tablib.formats._html'
 
@@ -147,19 +139,22 @@ class XLS(TablibFormat):
     TABLIB_MODULE = 'tablib.formats._xls'
 
     def can_import(self):
-        return XLS_IMPORT
+        return XLRD_IMPORT
 
     def create_dataset(self, in_stream):
         """
         Create dataset from first sheet.
         """
-        assert XLS_IMPORT
-        xls_book = xlrd.open_workbook(file_contents=in_stream)
+        assert XLRD_IMPORT
+        book = xlrd.open_workbook(file_contents=in_stream)
         dataset = tablib.Dataset()
-        sheet = xls_book.sheets()[0]
+        sheet = book.sheets()[0]
         for i in xrange(sheet.nrows):
             if i == 0:
                 dataset.headers = sheet.row_values(0)
             else:
                 dataset.append(sheet.row_values(i))
         return dataset
+        
+class XLSX(XLS):
+    TABLIB_MODULE = 'tablib.formats._xlsx'

@@ -30,7 +30,13 @@
 					var page = url_array[url_array.length-2];
 					if (page == "upload_images")
 							$("input.action-select").prop('checked', true);
-				
+					
+					// sort export form file_format field drop-down menu
+					$(".form-row select").html($('.form-row select option').sort(function(x, y) {
+					    return $(x).text() < $(y).text() ? -1 : 1;
+					}))
+					$(".form-row select").get(0).selectedIndex = 0;
+					
 					$("#include_images").change(function() {
 							if (this.checked) {
 									if (page == "upload") {
