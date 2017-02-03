@@ -101,10 +101,16 @@ L.Map.DjangoMap = L.Map.extend({
 
     _djAddLayers: function () {
         var layers = this.options.djoptions.layers,
+            overlays = this.options.djoptions.overlays || [],
             continuousWorld = this.options.continuousWorld;
 
-        if (layers.length == 1) {
+        if (layers.length == 1 && overlays.length == 0) {
             var layer = l2d(layers[0]);
+            // Make the only layer match the map max/min_zoom
+            layer.options = L.Util.extend(layer.options, {
+                minZoom: this.options.minZoom,
+                maxZoom: this.options.maxZoom
+            });
             L.tileLayer(layer.url, layer.options).addTo(this);
             return;
         }
@@ -117,10 +123,20 @@ L.Map.DjangoMap = L.Map.extend({
             // Show first one as default
             if (i === 0) l.addTo(this);
         }
+        for (var i = 0, n = overlays.length; i < n; i++) {
+            var layer = l2d(overlays[i]),
+                l = L.tileLayer(layer.url, layer.options);
+            this.layerscontrol.addOverlay(l, layer.name);
+        }
 
         function l2d(l) {
-            var options = {'attribution': l[2],
-                           'continuousWorld': continuousWorld};
+            var options = {'continuousWorld': continuousWorld};
+            if (typeof l[2] === 'string') {
+                // remain compatible with django-leaflet <= 0.15.0
+                options = L.Util.extend(options, {'attribution': l[2]});
+            } else {
+                options = L.Util.extend(options, l[2]);
+            }
             return {name: l[0], url: l[1], options: options};
         }
     },
@@ -196,7 +212,7 @@ L.Map.djangoMap = function (id, options) {
     /*
      * Trigger custom map:init Event
      */
-    triggerEvent(window, 'map:init', {map: map, options: options});
+    triggerEvent(window, 'map:init', {id: id, map: map, options: options});
 
     /*
      * Run callback if specified
